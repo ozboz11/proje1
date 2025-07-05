@@ -4,15 +4,20 @@ import pandas as pd
 from sklearn.neighbors import NearestNeighbors
 import numpy as np
 import matplotlib.pyplot as plt
-
+from pathlib import Path
 
 # 1. Load data
 @st.cache_data
 def load_data():
-    # Load the single combined dataset
-    df = pd.read_csv("seasons_scaled/final_table.csv", index_col = 0)
-    return df
+    # locate this file’s directory
+    base_dir = Path(__file__).parent
+    csv_path = base_dir / "seasons_scaled" / "final_table.csv"
+    if not csv_path.exists():
+        st.error(f"Couldn't find data at {csv_path}")
+        return pd.DataFrame()  # or raise an exception
+    return pd.read_csv(csv_path, index_col=0)
 
+df = load_data()
 # Load once
 df = load_data()
 
@@ -43,17 +48,23 @@ with tab1:
     traditional_features_in = st.checkbox("Use traditional stats subset.")
     ## shooting features ?
 
+    advanced_features = ["DEF_RATING","OFF_RATING","EFG_PCT","TS_PCT","PIE","POSS","OREB_PCT","DREB_PCT",'PCT_PTS_2PT',
+       'PCT_PTS_2PT_MR', 'PCT_PTS_3PT','PCT_PTS_PAINT', 'PCT_AST_2PM', 'PCT_UAST_2PM', 'PCT_AST_3PM',
+       'PCT_UAST_3PM',"PTS","FGA","FGM","STL","BLK","AST_RATIO","AST_PCT","AST_TO"]
+
+    traditional_features = ["PTS","AST","REB",'FGM', 'FGA', 'FG3M', 'FG3A',"DREB","OREB","TOV","STL","BLK"]
+
     all_features = df.drop(["PLAYER_NAME","MIN","GP","TEAM_ABBREVIATION","W_PCT","season","W","L","TEAM_ID"],axis=1).columns
     if advanced_features_in and traditional_features_in:
-        default_features = ["NET_RATING","TS_PCT","PTS"]
+        default_features = list(set(advanced_features+traditional_features))
         st.info("ADVANCED AND TRADITIONAL FEATURES ARE SELECTED", icon = "ℹ️")
     elif traditional_features_in:
-        default_features = ["PTS","AST","REB"]
+        default_features =  traditional_features
     elif advanced_features_in:
-        default_features = ["NET_RATING","TS_PCT"]
-
+        default_features =  advanced_features
     else:
-        default_features = ["PTS"]
+        default_features = ["PTS","AST"]
+        st.info("You can choose more features.")
     
     feature_cols = st.sidebar.multiselect(
             "Select features to include:",
