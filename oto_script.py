@@ -39,13 +39,27 @@ with tab1:
         25
     )
 
+    advanced_features_in = st.checkbox("Use advanced stats subset.")
+    traditional_features_in = st.checkbox("Use traditional stats subset.")
+    ## shooting features ?
 
     all_features = df.drop(["PLAYER_NAME","MIN","GP","TEAM_ABBREVIATION","W_PCT","season","W","L","TEAM_ID"],axis=1).columns
+    if advanced_features_in and traditional_features_in:
+        default_features = ["NET_RATING","TS_PCT","PTS"]
+        st.info("ADVANCED AND TRADITIONAL FEATURES ARE SELECTED", icon = "ℹ️")
+    elif traditional_features_in:
+        default_features = ["PTS","AST","REB"]
+    elif advanced_features_in:
+        default_features = ["NET_RATING","TS_PCT"]
+
+    else:
+        default_features = ["PTS"]
+    
     feature_cols = st.sidebar.multiselect(
-        "Select features to include:",
-        options=all_features,
-        default=["OFF_RATING", "DEF_RATING", "AST_PCT", "EFG_PCT", "TS_PCT"]
-    )
+            "Select features to include:",
+            options=all_features,
+            default=default_features
+        )
 
     #
     # 5. Prediction / similarity lookup
@@ -101,7 +115,7 @@ with tab1:
     st.dataframe(sim_df)
 
 with tab2:
-    st.header(f"Detailed breakdown of top 6 seperated metric of : {player}")
+    st.header(f"Detailed breakdown of top 6 seperated metric for: {player}")
 
     def calculate_top_n_cols(n_features: int, season: int, min_minutes: int, player: str):
         try:
@@ -217,6 +231,6 @@ with tab2:
         st.pyplot(fig)
 
     else:
-        st.warning("You should lower the min_minutes!")
+        st.warning("You should lower the selected minutes for player min_minutes!")
 
     
