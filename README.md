@@ -1,6 +1,4 @@
-NBA Analitik Panosu
 
-Hakkında
 
 NBA Analitik Panosu, Streamlit ile geliştirilmiş etkileşimli bir web uygulamasıdır. Bu pano sayesinde kullanıcılar NBA oyuncu istatistiklerini görselleştirebilir, farklı metriklere göre karşılaştırma yapabilir ve belirledikleri kriterlere uygun benzer oyuncuları kolayca bulabilirsiniz.
 
